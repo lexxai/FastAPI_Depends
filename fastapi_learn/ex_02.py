@@ -2,7 +2,10 @@ from fastapi import Depends, FastAPI
 
 app = FastAPI()
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+# A simple dependency
+def get_dependency():
+    return "dependency_value"
 
+@app.get("/")
+def read_root(dependency_value: str = Depends(get_dependency)):
+    return {"dependency": dependency_value}
