@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 from functools import wraps
+import time
 from typing import AsyncGenerator
 
 
@@ -11,12 +12,11 @@ class Depends:
 
     async def __call__(self):
         result = self.func()  # Call the dependency function
-        # Check if the result is an async generator
         if isinstance(result, AsyncGenerator):
             print("This is an async dependency.")
-            # Consume the async generator to get the yielded value
-            async for item in result:
-                return item  # Return the yielded value from the async generator
+            # Use async list comprehension to collect all yielded items
+            items = [item async for item in result]
+            return items if len(items) > 1 else items.pop()  # Return list or first item
         print("This is a sync dependency.")
         return result  # If it's sync, return the result directly
 
@@ -33,7 +33,7 @@ def app_get(path):
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
-            print("Before route handling")
+            print("\nBefore route handling")
 
             # Prepare resolved arguments for dependencies
             resolved_kwargs = {}
@@ -47,7 +47,7 @@ def app_get(path):
 
             # Call the original function with resolved dependencies
             result = await func(*args, **resolved_kwargs)
-            print(f"After route handling with result: {result}")
+            print(f"After route handling with result: {result}\n")
             return result
 
         return wrapper
@@ -58,16 +58,25 @@ def app_get(path):
 # Simulated async dependency function using yield (async generator)
 async def some_dependency():
     print("try to open resource")
-    await asyncio.sleep(1)  # Simulate async behavior, e.g., opening a resource
-    print("resource opened")
-    yield "dependency result"  # Yield the result to simulate dependency injection
-    print("closing resource")
-    await asyncio.sleep(1)  # Simulate resource cleanup
+    try:
+        await asyncio.sleep(1)  # Simulate async behavior, e.g., opening a resource
+        print("resource opened")
+        yield "dependency result"  # Yield the result to simulate dependency injection
+    finally:
+        print("closing resource")
+        await asyncio.sleep(1)  # Simulate resource cleanup
 
 
 # Simulated sync dependency function
 def sync_dependency():
-    return "sync dependency result"
+    print("try to open resource")
+    time.sleep(1)  # Simulate opening a resource
+    try:
+        print("resource opened")
+        return "sync dependency result"
+    finally:
+        print("closing resource")
+        time.sleep(1)  # Simulate resource cleanup
 
 
 # Route function using our custom decorator and dependency simulation
