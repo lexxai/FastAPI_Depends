@@ -1,5 +1,4 @@
 import asyncio
-import inspect
 from functools import wraps
 import time
 from typing import AsyncGenerator
@@ -11,13 +10,16 @@ class Depends:
         self.func = func  # Store the dependency function
 
     async def __call__(self):
+        print("** Calling dependency. But not sure if it is sync or async.")
         result = self.func()  # Call the dependency function
+        print("== Result of dependency know. Now detecting is sync or async.")
+
         if isinstance(result, AsyncGenerator):
-            print("This is an async dependency.")
+            print(":: This is an async dependency.")
             # Use async list comprehension to collect all yielded items
             items = [item async for item in result]
             return items if len(items) > 1 else items.pop()  # Return list or first item
-        print("This is a sync dependency.")
+        print(":: This is a sync dependency.")
         return result  # If it's sync, return the result directly
 
 
