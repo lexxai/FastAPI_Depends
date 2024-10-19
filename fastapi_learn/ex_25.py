@@ -9,25 +9,23 @@ class Depends:
     def __init__(self, func):
         self.func = func  # Store the dependency function
 
-    def __call__(self):
-        return self.func()  # When called, it calls the dependency function
+    async def __call__(self):
+        result = self.func()  # Call the dependency function
+        # Check if the result is an async generator
+        if isinstance(result, AsyncGenerator):
+            print("This is an async dependency.")
+            # Consume the async generator to get the yielded value
+            async for item in result:
+                return item  # Return the yielded value from the async generator
+        print("This is a sync dependency.")
+        return result  # If it's sync, return the result directly
 
 
 # Custom async dependency resolver function (like FastAPI's Depends)
 async def depends(dep_func):
     print("depends core")
-
-    # Call the dependency function and check if it returns a coroutine (async function)
-    result = dep_func()
-
-    # If the result is an async generator, consume it
-    if isinstance(result, AsyncGenerator):
-        print("This is an async dependency.")
-        async for item in result:
-            return item  # Return the yielded value from the async generator
-
-    print("This is a sync dependency.")
-    return result  # Return the result directly (sync or async result)
+    # Simply return the result from the Depends object
+    return await dep_func()  # If it's async, await the result
 
 
 # Custom @app_get decorator to simulate route registration and dependency injection
@@ -42,9 +40,8 @@ def app_get(path):
 
             for key, value in kwargs.items():
                 if isinstance(value, Depends):  # If the argument is a Depends object
-                    resolved_kwargs[key] = await depends(
-                        value.func
-                    )  # Resolve the dependency
+                    # Resolve the dependency
+                    resolved_kwargs[key] = await depends(value)
                 else:
                     resolved_kwargs[key] = value
 
