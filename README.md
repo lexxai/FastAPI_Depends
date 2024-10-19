@@ -24,3 +24,10 @@ Questions:
 - With the asynchronous yeld for the asynchronous database initialization, is there a lot of complexity involved? 
 
 ![зображення](https://github.com/user-attachments/assets/4c967767-c692-4baf-8294-a8ef5eb9a234)
+
+
+## Addons:
+- [ex_22](fastapi_learn/ex_22.py)
+- [ex_23](fastapi_learn/ex_23.py)
+- [README - ex_24](fastapi_learn/ex_24.md)
+- [README - ex_25](fastapi_learn/ex_25.md)
