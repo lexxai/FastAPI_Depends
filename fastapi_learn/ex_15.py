@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI, APIRouter
 
 
 @asynccontextmanager

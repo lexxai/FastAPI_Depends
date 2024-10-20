@@ -2,7 +2,7 @@ import asyncpg
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI, APIRouter
 
 
 app = FastAPI() if __name__ == "__main__" else APIRouter()

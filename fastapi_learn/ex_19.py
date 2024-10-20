@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import text
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI, APIRouter
 
 # Create an asynchronous engine and session factory
 DATABASE_URL = "postgresql+asyncpg://fs:123@localhost/fs"
