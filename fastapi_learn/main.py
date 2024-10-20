@@ -50,6 +50,11 @@ async def root():
     return {"loaded_routes": loaded_routes}
 
 
+@app.get("/health")
+async def health():
+    return {"satatus": "OK"}
+
+
 if __name__ == "__main__":
     import uvicorn
 
