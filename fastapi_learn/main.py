@@ -50,6 +50,11 @@ async def root():
     return {"loaded_routes": loaded_routes}
 
 
+@app.head("/health")
+async def health():
+    return {"status": "OK"}
+
+
 @app.get("/health")
 async def health():
     return {"status": "OK"}
