@@ -1,8 +1,20 @@
 import importlib.machinery
 from pathlib import Path
 from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+
+# Define lifespan context for the FastAPI app
+@asynccontextmanager
+async def lifespan(app):
+    app.state.counter = 0  # Initialize some state on startup
+    print(f"Initialize on startup {app.state.counter=}")
+    yield
+    print(f"Clean up on shutdown {app.state.counter=}")
+    # Perform any cleanup tasks when the app shuts down
+
+
+app = FastAPI(lifespan=lifespan)
 
 loaded_routes = []
 
@@ -23,6 +35,8 @@ for file in sorted(module_path.glob("ex_*.py")):
         app.include_router(module.app, prefix=f"/{module_name}")
     elif hasattr(module, "router"):
         app.include_router(module.router, prefix=f"/{module_name}")
+    if hasattr(module, "main_app"):
+        setattr(module, "main_app", app)
 
     # Collect all routes defined in the module
     for route in app.routes:
