@@ -1,3 +1,4 @@
+import os
 import redis
 from fastapi import Depends, FastAPI, APIRouter
 
@@ -6,7 +7,8 @@ app = FastAPI() if __name__ == "__main__" else APIRouter()
 
 # First dependency to initialize the Redis client
 def get_redis():
-    client = redis.Redis(host="localhost", port=6379, db=0)
+    redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+    client = redis.from_url(redis_url)
     try:
         yield client
     finally:
