@@ -13,6 +13,9 @@ The result was 21 training examples written in Python, where I checked the answe
 Full publication:
 https://lexxai.blogspot.com/2024/10/fastapi-dependency-injection-21.html
 
+Deployed version:
+https://fastapi-depends.onrender.com/docs
+
 Questions:
 
 - Prepare for use FastAPI project
