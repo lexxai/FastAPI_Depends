@@ -52,7 +52,7 @@ async def root():
 
 @app.get("/health")
 async def health():
-    return {"satatus": "OK"}
+    return {"status": "OK"}
 
 
 if __name__ == "__main__":
