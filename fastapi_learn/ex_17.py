@@ -1,6 +1,6 @@
 import os
 import redis
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, APIRouter
 
 app = FastAPI() if __name__ == "__main__" else APIRouter()
 
