@@ -20,10 +20,11 @@ loaded_routes = []
 
 # Automatically find all ex_*.py files and import their routers
 module_path = Path(__file__).parent
+modules_exclude = [21]
 for file in sorted(module_path.glob("ex_*.py")):
     module_name = file.stem  # Get the file name without extension
     module_id = int(module_name.split("_")[-1])
-    if module_id > 23:
+    if module_id > 23 or module_id in modules_exclude:
         continue
 
     # Load the module from the file dynamically using importlib.machinery
