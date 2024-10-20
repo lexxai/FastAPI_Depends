@@ -9,7 +9,11 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(lifespan=lifespan)
+app = (
+    FastAPI(lifespan=lifespan)
+    if __name__ == "__main__"
+    else APIRouter(lifespan=lifespan)
+)
 
 
 class StateDependency:

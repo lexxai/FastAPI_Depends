@@ -2,13 +2,17 @@ import importlib.machinery
 from pathlib import Path
 from fastapi import FastAPI
 
-app = FastAPI() if __name__ == "__main__" else APIRouter()
+app = FastAPI()
 
+loaded_routes = []
 
 # Automatically find all ex_*.py files and import their routers
 module_path = Path(__file__).parent
 for file in sorted(module_path.glob("ex_*.py")):
     module_name = file.stem  # Get the file name without extension
+    module_id = int(module_name.split("_")[-1])
+    if module_id > 23:
+        continue
 
     # Load the module from the file dynamically using importlib.machinery
     loader = importlib.machinery.SourceFileLoader(module_name, str(file))
@@ -20,10 +24,16 @@ for file in sorted(module_path.glob("ex_*.py")):
     elif hasattr(module, "router"):
         app.include_router(module.router, prefix=f"/{module_name}")
 
+    # Collect all routes defined in the module
+    for route in app.routes:
+        # Check if the route's path starts with the module's prefix
+        if route.path.startswith(f"/{module_name}"):
+            loaded_routes.append(route.path)
+
 
 @app.get("/")
 async def root():
-    return {"message": "Main app route"}
+    return {"loaded_routes": loaded_routes}
 
 
 if __name__ == "__main__":
