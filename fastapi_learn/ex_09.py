@@ -1,6 +1,7 @@
 from fastapi import Depends, FastAPI
 
-app = FastAPI()
+app = FastAPI() if __name__ == "__main__" else APIRouter()
+
 
 async def dependency_with_yield():
     try:
@@ -11,6 +12,7 @@ async def dependency_with_yield():
     finally:
         # Cleanup: Close the database connection
         print("****** Closing database connection ******************")
+
 
 @app.get("/items/")
 async def get_items(db=Depends(dependency_with_yield)):

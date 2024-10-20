@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends
+from fastapi import APIRouter, FastAPI, Depends
 
 
 @asynccontextmanager
@@ -8,8 +8,7 @@ async def lifespan(app: FastAPI):
     print(f"Initialize on startup {app.state.counter=}")
     yield
 
-
-app = FastAPI(lifespan=lifespan)
+app =  FastAPI(lifespan=lifespan)  if __name__ == "__main__" else APIRouter(lifespan=lifespan) 
 
 
 class StateDependency:

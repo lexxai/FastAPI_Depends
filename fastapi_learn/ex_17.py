@@ -1,7 +1,7 @@
 import redis
 from fastapi import FastAPI, Depends
 
-app = FastAPI()
+app = FastAPI() if __name__ == "__main__" else APIRouter()
 
 
 # Dependency to initialize the Redis client

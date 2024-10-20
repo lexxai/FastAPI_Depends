@@ -1,6 +1,7 @@
 from fastapi import Depends, FastAPI
 
-app = FastAPI()
+app = FastAPI() if __name__ == "__main__" else APIRouter()
+
 
 class MyDependency:
     def __init__(self):
@@ -10,7 +11,7 @@ class MyDependency:
         self.value += 1
         return self.value
 
+
 @app.get("/counter")
 def counter(dep: MyDependency = Depends(MyDependency)):
     return {"count": dep.increment()}
-

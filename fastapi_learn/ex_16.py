@@ -1,6 +1,6 @@
 from fastapi import Depends, FastAPI
 
-app = FastAPI()
+app = FastAPI() if __name__ == "__main__" else APIRouter()
 
 
 class SingletonDependency:
@@ -25,4 +25,3 @@ def get_singleton_dependency() -> SingletonDependency:
 @app.get("/singleton")
 def singleton_counter(dep: SingletonDependency = Depends(get_singleton_dependency)):
     return {"count": dep.increment()}
-

@@ -11,7 +11,7 @@ AsyncSessionLocal = sessionmaker(
     autocommit=False, autoflush=False, bind=engine, class_=AsyncSession
 )
 
-app = FastAPI()
+app = FastAPI() if __name__ == "__main__" else APIRouter()
 
 
 class CustomService:
@@ -50,5 +50,3 @@ async def complex_route(service: CustomService = Depends(get_custom_service)):
 async def complex_route(service: CustomService = Depends(get_custom_service)):
     data = await service.do_query()
     return {"result": data}
-
-

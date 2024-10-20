@@ -1,7 +1,7 @@
-
 from fastapi import Depends, FastAPI
 
-app = FastAPI()
+app = FastAPI() if __name__ == "__main__" else APIRouter()
+
 
 async def dependency_with_yield():
     try:
@@ -16,5 +16,3 @@ async def dependency_with_yield():
 async def route_with_error(resource: str = Depends(dependency_with_yield)):
     print("Handling request with resource:", resource)
     raise Exception("Something went wrong!")  # Simulate an error
-
-

@@ -10,7 +10,7 @@ AsyncSessionLocal = sessionmaker(
     autocommit=False, autoflush=False, bind=engine, class_=AsyncSession
 )
 
-app = FastAPI()
+app = FastAPI() if __name__ == "__main__" else APIRouter()
 
 
 # Async dependency to get the database session

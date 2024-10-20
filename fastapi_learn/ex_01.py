@@ -1,6 +1,7 @@
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI, APIRouter
 
-app = FastAPI()
+
+app =  FastAPI()  if __name__ == "__main__" else APIRouter() 
 
 @app.get("/")
 async def read_root():
