@@ -2,7 +2,8 @@ import os
 import asyncpg
 from asyncpg import PostgresError
 
-DATABASE_URL = os.getenv("PSQL_URL", "postgresql://fs:123@127.0.0.1/fs")
+
+DATABASE_URL = os.getenv("PSQL_URL", "postgresql://fs:123@localhost/fs")
 
 
 async def get_db_client():
