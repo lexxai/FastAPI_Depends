@@ -37,6 +37,7 @@ class CustomService:
 async def get_db_client() -> AsyncGenerator:
     async with AsyncSessionLocal() as session:
         yield session
+    print(f"{__name__} get_db.close")
 
 
 # Another dependency that uses the async database connection

@@ -28,6 +28,7 @@ async def get_db_client():
     try:
         yield client
     finally:
+        print(f"{__name__} get_db.close")
         await client.close()  # Ensure async resource cleanup
 
 

@@ -23,6 +23,7 @@ async def get_db():
         try:
             yield session  # Pass the session to the route handler
         finally:
+            print(f"{__name__} get_db.close")
             await session.close()  # Ensure proper cleanup with await
 
 
