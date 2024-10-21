@@ -4,9 +4,16 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 
+async def run_modules_startup(loaded_modules):
+    for module in loaded_modules:
+        if hasattr(module, "startup"):
+            await module.startup()
+
+
 # Define lifespan context for the FastAPI app
 @asynccontextmanager
 async def lifespan(app):
+    await run_modules_startup(loaded_modules)
     app.state.counter = 0  # Initialize some state on startup
     print(f"Initialize on startup {app.state.counter=}")
     yield
@@ -17,33 +24,37 @@ async def lifespan(app):
 app = FastAPI(lifespan=lifespan)
 
 loaded_routes = []
+loaded_modules = []
 
 # Automatically find all ex_*.py files and import their routers
 module_path = Path(__file__).parent
-modules_exclude = [21]
-for file in sorted(module_path.glob("ex_*.py")):
+modules_exclude = []
+for file in sorted(module_path.glob("ex_??.py")):
     module_name = file.stem  # Get the file name without extension
     module_id = int(module_name.split("_")[-1])
     if module_id > 23 or module_id in modules_exclude:
         continue
+    try:
+        # Load the module from the file dynamically using importlib.machinery
+        loader = importlib.machinery.SourceFileLoader(module_name, str(file))
+        module = loader.load_module()
+        loaded_modules.append(module)
 
-    # Load the module from the file dynamically using importlib.machinery
-    loader = importlib.machinery.SourceFileLoader(module_name, str(file))
-    module = loader.load_module()
+        # Include the router (assuming the module defines 'app' or 'router')
+        if hasattr(module, "app"):
+            app.include_router(module.app, prefix=f"/{module_name}")
+        elif hasattr(module, "router"):
+            app.include_router(module.router, prefix=f"/{module_name}")
+        if hasattr(module, "main_app"):
+            setattr(module, "main_app", app)
 
-    # Include the router (assuming the module defines 'app' or 'router')
-    if hasattr(module, "app"):
-        app.include_router(module.app, prefix=f"/{module_name}")
-    elif hasattr(module, "router"):
-        app.include_router(module.router, prefix=f"/{module_name}")
-    if hasattr(module, "main_app"):
-        setattr(module, "main_app", app)
-
-    # Collect all routes defined in the module
-    for route in app.routes:
-        # Check if the route's path starts with the module's prefix
-        if route.path.startswith(f"/{module_name}"):
-            loaded_routes.append(route.path)
+        # Collect all routes defined in the module
+        for route in app.routes:
+            # Check if the route's path starts with the module's prefix
+            if route.path.startswith(f"/{module_name}"):
+                loaded_routes.append(route.path)
+    finally:
+        ...
 
 
 @app.get("/")

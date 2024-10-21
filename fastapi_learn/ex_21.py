@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+import os
 import asyncpg
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -5,7 +7,20 @@ from sqlalchemy import text
 from fastapi import Depends, FastAPI, APIRouter
 
 
-app = FastAPI() if __name__ == "__main__" else APIRouter()
+DATABASE_URL = os.getenv("PSQL_URL", "postgresql://fs:123@127.0.0.1/fs")
+
+if __name__ == "fastapi_learn.ex_21":
+
+    @asynccontextmanager
+    async def lifespan(app):
+        await startup()
+        print(f"Initialize on startup {app.state.counter=}")
+        yield
+
+    app = FastAPI(lifespan=lifespan)
+else:
+    app = APIRouter()
+    main_app = None
 
 
 class CustomService:
@@ -22,9 +37,7 @@ class CustomService:
 
 
 async def get_db_client():
-    client = await asyncpg.connect(
-        user="fs", password="123", database="fs", host="127.0.0.1"
-    )
+    client = await asyncpg.connect(DATABASE_URL)
     try:
         yield client
     finally:
@@ -34,6 +47,38 @@ async def get_db_client():
 # Another dependency that uses the async database connection
 async def get_custom_service(db_client=Depends(get_db_client)):
     return CustomService(db_client)  # Some custom service that uses the db
+
+
+# CRUD ...
+async def create_table(db_client) -> None:
+    await db_client.execute(
+        """
+        CREATE TABLE IF NOT EXISTS items (
+            id SERIAL PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            description TEXT
+        )
+    """
+    )
+    print("Table created successfully or already exists.")
+
+
+async def create_item(item: dict, db_client) -> dict:
+    result = await db_client.fetchrow(
+        "INSERT INTO items (name, description) VALUES ($1, $2) RETURNING id, name, description",
+        item.get("name"),
+        item.get("description"),
+    )
+    return dict(result)
+
+
+async def startup():
+    print("Startup ex_21")
+    await create_table(db_client=Depends(get_db_client))
+    item = {"name": "name1", "description": "description1"}
+    await create_item(item, db_client=Depends(get_db_client))
+    item = {"name": "name2", "description": "description2"}
+    await create_item(item, db_client=Depends(get_db_client))
 
 
 # Route using the cascading async dependencies

@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI, Depends
 
-if __name__ == "__main__":
+
+if __name__ == "fastapi_learn.ex_14":
 
     @asynccontextmanager
     async def lifespan(app):
