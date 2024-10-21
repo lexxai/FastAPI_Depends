@@ -37,6 +37,7 @@ class CustomService:
 async def get_db_client() -> AsyncGenerator:
     async with AsyncSessionLocal() as session:
         try:
+            session.close_resets_only = False
             yield session  # Provide the session to be used in a route
         finally:
             print(f"{__name__} get_db.session.close")
