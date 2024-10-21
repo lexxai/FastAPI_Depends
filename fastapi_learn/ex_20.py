@@ -14,7 +14,7 @@ AsyncSessionLocal = sessionmaker(
     autocommit=False, autoflush=False, bind=engine, class_=AsyncSession
 )
 
-app = FastAPI() if __name__ == "__main__" else APIRouter()
+app = FastAPI() if __name__.startswith("fastapi_learn.") else APIRouter()
 
 
 class CustomService:

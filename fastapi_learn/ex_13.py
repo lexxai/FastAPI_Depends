@@ -2,7 +2,7 @@ import os
 import redis
 from fastapi import Depends, FastAPI, APIRouter
 
-app = FastAPI() if __name__ == "__main__" else APIRouter()
+app = FastAPI() if __name__.startswith("fastapi_learn.") else APIRouter()
 
 redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
 r = redis.from_url(redis_url)

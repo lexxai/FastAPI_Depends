@@ -3,7 +3,8 @@ import redis
 from fastapi import Depends, FastAPI, APIRouter
 
 
-app = FastAPI() if __name__ == "__main__" else APIRouter()
+app = FastAPI() if __name__.startswith("fastapi_learn.") else APIRouter()
+
 
 # First dependency to initialize the Redis client
 def get_redis():

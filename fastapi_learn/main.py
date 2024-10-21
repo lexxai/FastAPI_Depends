@@ -3,6 +3,8 @@ from pathlib import Path
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
+from .pg_init import pg_init_startup
+
 
 async def run_modules_startup(loaded_modules):
     for module in loaded_modules:
@@ -13,7 +15,7 @@ async def run_modules_startup(loaded_modules):
 # Define lifespan context for the FastAPI app
 @asynccontextmanager
 async def lifespan(app):
-    await run_modules_startup(loaded_modules)
+    await pg_init_startup()
     app.state.counter = 0  # Initialize some state on startup
     print(f"Initialize on startup {app.state.counter=}")
     yield
@@ -28,7 +30,7 @@ loaded_modules = []
 
 # Automatically find all ex_*.py files and import their routers
 module_path = Path(__file__).parent
-modules_exclude = []
+modules_exclude = [19,20]
 for file in sorted(module_path.glob("ex_??.py")):
     module_name = file.stem  # Get the file name without extension
     module_id = int(module_name.split("_")[-1])
