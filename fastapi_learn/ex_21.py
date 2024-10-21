@@ -1,9 +1,6 @@
 from contextlib import asynccontextmanager
 import os
 import asyncpg
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import text
 from fastapi import Depends, FastAPI, APIRouter
 
 
