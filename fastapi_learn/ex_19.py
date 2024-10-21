@@ -6,7 +6,7 @@ from fastapi import Depends, FastAPI, APIRouter
 
 
 # Create an asynchronous engine and session factory
-DATABASE_URL = os.getenv("PSQL_URL", "postgresql://fs:123@localhost/fs")
+DATABASE_URL = os.getenv("PSQL_URL", "postgresql+asyncpg://fs:123@localhost/fs")
 
 engine = create_async_engine(DATABASE_URL)
 AsyncSessionLocal = sessionmaker(

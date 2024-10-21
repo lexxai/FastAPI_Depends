@@ -30,7 +30,7 @@ loaded_modules = []
 
 # Automatically find all ex_*.py files and import their routers
 module_path = Path(__file__).parent
-modules_exclude = [19,20]
+modules_exclude = []
 for file in sorted(module_path.glob("ex_??.py")):
     module_name = file.stem  # Get the file name without extension
     module_id = int(module_name.split("_")[-1])
