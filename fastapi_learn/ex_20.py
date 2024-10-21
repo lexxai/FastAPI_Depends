@@ -36,8 +36,12 @@ class CustomService:
 
 async def get_db_client() -> AsyncGenerator:
     async with AsyncSessionLocal() as session:
-        yield session
-    print(f"{__name__} get_db.close")
+        try:
+            yield session  # Provide the session to be used in a route
+        finally:
+            print(f"{__name__} get_db.session.close")
+            await session.close()  # Explicitly close the session
+    print(f"{__name__} get_db_client.AsyncSessionLocal finish")
 
 
 # Another dependency that uses the async database connection
