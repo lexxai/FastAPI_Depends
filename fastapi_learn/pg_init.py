@@ -1,18 +1,24 @@
 import os
 import asyncpg
 from asyncpg import PostgresError
+from faker import Faker
 
+
+# Initialize Faker
+fake = Faker()
 
 DATABASE_URL = os.getenv("PSQL_URL", "postgresql://fs:123@localhost/fs")
 
 
 async def get_db_client():
     try:
+        print("pg_init get_db_client opening db")
         client = await asyncpg.connect(DATABASE_URL)
         try:
             yield client
         finally:
             await client.close()  # Ensure async resource cleanup
+            print("pg_init get_db_client close db")
     except (PostgresError, ConnectionError) as e:
         print(f"Error connecting to the database: {e}")
         raise  # Optionally, re-raise the exception to propagate it
@@ -54,11 +60,12 @@ async def pg_init_startup():
     try:
         async for db_client in get_db_client():
             await create_table(db_client)
-
-            # Insert some test items
-            item = {"name": "name1", "description": "description1"}
-            await create_item(item, db_client)
-            item = {"name": "name2", "description": "description2"}
-            await create_item(item, db_client)
+            for _ in range(4):
+                # Insert some test items
+                name = fake.word()
+                description = fake.sentence()
+                item = {"name": name, "description": description}
+                result = await create_item(item, db_client)
+                print(f"pg_init create_item {result=}")
     except (PostgresError, ConnectionError) as e:
         print(f"Database operation failed: {e}")
