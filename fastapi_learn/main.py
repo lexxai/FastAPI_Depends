@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from .pg_init import pg_init_startup
-from .wake import ping_service
+from .services import ping_service
 
 
 async def run_modules_startup(loaded_modules):
