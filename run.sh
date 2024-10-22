@@ -1,11 +1,11 @@
 #!/bin/sh
 
-apt update
-apt install -y postgresql postgresql-contrib
-systemctl start postgresql
-systemctl enable postgresql
+# apt update
+# apt install -y postgresql postgresql-contrib
+# systemctl start postgresql
+# systemctl enable postgresql
 
-docker -v
+# docker -v
 
 cd fastapi_learn
 fastapi run main.py
