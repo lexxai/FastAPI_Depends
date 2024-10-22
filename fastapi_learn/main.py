@@ -1,9 +1,11 @@
+import asyncio
 import importlib.machinery
 from pathlib import Path
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from .pg_init import pg_init_startup
+from .wake import ping_service
 
 
 async def run_modules_startup(loaded_modules):
@@ -15,12 +17,17 @@ async def run_modules_startup(loaded_modules):
 # Define lifespan context for the FastAPI app
 @asynccontextmanager
 async def lifespan(app):
+    ping_task = asyncio.create_task(
+        ping_service()
+    )  # Start the periodic ping in the background
     await pg_init_startup()
     app.state.counter = 0  # Initialize some state on startup
     print(f"Initialize on startup {app.state.counter=}")
     yield
     print(f"Clean up on shutdown {app.state.counter=}")
     # Perform any cleanup tasks when the app shuts down
+    ping_task.cancel()  # Cancel the ping task on shutdown
+    await ping_task  # Wait for the ping task to finish gracefully
 
 
 app = FastAPI(lifespan=lifespan)
