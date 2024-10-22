@@ -11,7 +11,7 @@ async def ping_service():
     while True:
         try:
             async with httpx.AsyncClient() as client:
-                response = await client.head(url)  # Async HTTP request
+                response = await client.get(url)  # Async HTTP request
                 if response.status_code == 200:
                     print(f"ping_service state OK")
                 else:
